@@ -31,7 +31,7 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         color: color,
-        isSpecial: Math.random() < 0.15 // 1% Chance, dass ein Stern-Snack erscheint
+        isSpecial: Math.random() < 0.01 // 1% Chance, dass ein Stern-Snack erscheint
     };
 }
 
@@ -118,8 +118,7 @@ for (let i = 0; i < snake.length; i++) {
         score = 0;
         snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
         direction = undefined;
-        food = createFood();
-        foodColor = food.color;
+        food = createFood();        foodColor = food.color;
         updateScoreDisplay();
         return;
     }
@@ -132,6 +131,34 @@ setInterval(() => {
         document.getElementById("poweredBy").style.color = foodColor;
     }
 }, 5000);
+// Funktion, um das Essen zu erstellen
+function createFood() {
+    const food = {
+        // Beispiel: zufällige Position und Farbe generieren
+        x: Math.floor(Math.random() * 20), // Position x
+        y: Math.floor(Math.random() * 20), // Position y
+        color: '#' + Math.floor(Math.random() * 16777215).toString(16) // Zufällige Farbe
+    };
+    return food;
+}
+
+// Funktion, um zu prüfen, ob das Essen gegessen wurde
+function checkIfFoodEaten() {
+    // Prüfe, ob die Spielfigur an der Position des Essens ist
+    if (player.x === food.x && player.y === food.y) {
+        // Essen neu erstellen und Farbe aktualisieren
+        food = createFood();
+        foodColor = food.color;
+        document.getElementById("poweredBy").style.color = foodColor;
+    }
+}
+
+// Beispiel: wiederholt die Prüfung auf Konsumierung
+setInterval(() => {
+    if (!isPaused) {
+        checkIfFoodEaten();
+    }
+}, 100); // Intervall für die Prüfung alle 100ms
 
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
