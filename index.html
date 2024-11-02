@@ -5,17 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        #gameContainer {
+            display: flex;
+            align-items: center;
+        }
+
+        #scorePanel {
+            margin-right: 20px;
+            text-align: left;
+        }
+
+        #scorePanel div {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        #poweredBy {
+            position: absolute;
+            right: 10px;
+            font-size: 18px;
+        }
+
         canvas {
             border: 1px solid black;
             display: block;
-            margin: 0 auto;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Snake Game</h1>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <h1>Snake Game</h1>
+
+    <div id="gameContainer">
+        <!-- Score Panel on the left side -->
+        <div id="scorePanel">
+            <div id="gamesPlayed">Games Played: 0</div>
+            <div id="score">Current Score: 0</div>
+            <div id="highScore">All Time High Score: 0</div>
+        </div>
+
+        <!-- Game Canvas in the center -->
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+        <!-- Powered by Text on the right side -->
+        <div id="poweredBy">Powered by Paul and Julien</div>
+    </div>
+
+    <!-- Include snake.js script -->
     <script src="snake.js"></script>
 </body>
 </html>
- 

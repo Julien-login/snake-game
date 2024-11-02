@@ -3,16 +3,48 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box };
+snake[0] = { x: 9 * box, y: 10 * box, color: "green" };
 
-let food = {
-    x: Math.floor(Math.random() * 19) * box,
-    y: Math.floor(Math.random() * 19) * box
-};
-
+let food = createFood();
+let foodColor = food.color;
+let specialMode = false;
+let specialModeTimeout;
 let direction;
 let isPaused = false;
 
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
+
+// Anzeige aktualisieren
+function updateScoreDisplay() {
+    document.getElementById("score").innerText = `Current Score: ${score}`;
+    document.getElementById("highScore").innerText = `All Time High Score: ${highScore}`;
+    document.getElementById("gamesPlayed").innerText = `Games Played: ${gamesPlayed}`;
+}
+
+// Snack erstellen
+function createFood() {
+    const colors = ["red", "blue", "yellow", "purple", "orange"];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    return {
+        x: Math.floor(Math.random() * 19) * box,
+        y: Math.floor(Math.random() * 19) * box,
+        color: color,
+        isSpecial: Math.random() < 0.01 // 1% Chance, dass ein Stern-Snack erscheint
+    };
+}
+
+// Spezialmodus aktivieren
+function activateSpecialMode() {
+    specialMode = true;
+    clearTimeout(specialModeTimeout);
+    specialModeTimeout = setTimeout(() => {
+        specialMode = false;
+    }, 20000); // 20 Sekunden Immunität
+}
+
+// Steuerungseingaben
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
     else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
@@ -21,9 +53,10 @@ document.addEventListener("keydown", (event) => {
     else if (event.code === "Space") isPaused = !isPaused;
 });
 
+// Kollisionsprüfung
 function checkCollision(head, array) {
-    if (array.length <= 1) return false; // Keine Kollision, wenn die Schlange nur ein Segment hat
-    for (let i = 1; i < array.length; i++) { // Beginne ab dem zweiten Segment
+    if (specialMode) return false; // Keine Kollision im Spezialmodus
+    for (let i = 1; i < array.length; i++) {
         if (head.x === array[i].x && head.y === array[i].y) {
             return true;
         }
@@ -31,29 +64,28 @@ function checkCollision(head, array) {
     return false;
 }
 
-function relocateFood() {
-    // Setzt das Essen an eine zufällige Position
-    food = {
-        x: Math.floor(Math.random() * 19) * box,
-        y: Math.floor(Math.random() * 19) * box
-    };
-}
-
+// Hauptspiel-Rendering
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < snake.length; i++) {
-        ctx.beginPath();
-        ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
-        ctx.fillStyle = i === 0 ? "green" : "lightgreen";
-        ctx.fill();
-        ctx.strokeStyle = "darkgreen";
-        ctx.stroke();
+        ctx.fillStyle = snake[i].color;
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, box, box);
+    // Essen anzeigen
+    ctx.fillStyle = foodColor;
+    if (food.isSpecial) {
+        ctx.beginPath();
+        ctx.arc(food.x + box / 2, food.y + box / 2, box / 2, 0, 2 * Math.PI);
+        ctx.fill();
+    } else {
+        ctx.fillRect(food.x, food.y, box, box);
+    }
 
+    // Schlange bewegen
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
@@ -62,26 +94,45 @@ function draw() {
     if (direction === "LEFT") snakeX -= box;
     if (direction === "RIGHT") snakeX += box;
 
+    // Spielfeldgrenzen
     if (snakeX < 0) snakeX = canvas.width - box;
     else if (snakeX >= canvas.width) snakeX = 0;
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY };
+    const newHead = { x: snakeX, y: snakeY, color: foodColor };
 
+    // Kollision mit sich selbst
     if (checkCollision(newHead, snake)) {
         alert("Game Over! Die Schlange hat sich selbst getroffen.");
-        clearInterval(game); // Stoppe das Spiel, statt die Seite neu zu laden
+        gamesPlayed++;
+        localStorage.setItem("gamesPlayed", gamesPlayed);
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+        }
+        score = 0;
+        snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
+        direction = undefined;
+        food = createFood();
+        foodColor = food.color;
+        updateScoreDisplay();
         return;
     }
 
+    // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
-        relocateFood();
+        score++;
+        if (food.isSpecial) activateSpecialMode(); // Aktiviert Unsterblichkeit nur bei speziellen Snacks
+        food = createFood();
+        foodColor = food.color;
+        document.getElementById("poweredBy").style.color = foodColor; // Farbe für „Powered by“-Text aktualisieren
     } else {
         snake.pop();
     }
 
     snake.unshift(newHead);
+    updateScoreDisplay();
 }
 
 function gameLoop() {
@@ -90,6 +141,6 @@ function gameLoop() {
     }
 }
 
-// Starte das Spiel und die regelmäßige Neupositionierung des Essens
+// Spiel starten und Anzeige regelmäßig aktualisieren
 const game = setInterval(gameLoop, 100);
-setInterval(relocateFood, 5000); // Alle 5 Sekunden wird das Essen an eine neue Position gesetzt
+setInterval(updateScoreDisplay, 1000); // Anzeige jede Sekunde aktualisieren
