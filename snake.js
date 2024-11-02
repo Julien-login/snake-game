@@ -31,14 +31,12 @@ function checkCollision(head, array) {
     return false;
 }
 
-function moveFood() {
-    const directions = ["UP", "DOWN", "LEFT", "RIGHT"];
-    const direction = directions[Math.floor(Math.random() * directions.length)];
-
-    if (direction === "UP" && food.y > 0) food.y -= box;
-    if (direction === "DOWN" && food.y < canvas.height - box) food.y += box;
-    if (direction === "LEFT" && food.x > 0) food.x -= box;
-    if (direction === "RIGHT" && food.x < canvas.width - box) food.x += box;
+function relocateFood() {
+    // Setzt das Essen an eine zufällige Position
+    food = {
+        x: Math.floor(Math.random() * 19) * box,
+        y: Math.floor(Math.random() * 19) * box
+    };
 }
 
 function draw() {
@@ -78,10 +76,7 @@ function draw() {
     }
 
     if (snakeX === food.x && snakeY === food.y) {
-        food = {
-            x: Math.floor(Math.random() * 19) * box,
-            y: Math.floor(Math.random() * 19) * box
-        };
+        relocateFood();
     } else {
         snake.pop();
     }
@@ -92,8 +87,9 @@ function draw() {
 function gameLoop() {
     if (!isPaused) {
         draw();
-        moveFood();
     }
 }
 
+// Starte das Spiel und die regelmäßige Neupositionierung des Essens
 const game = setInterval(gameLoop, 100);
+setInterval(relocateFood, 5000); // Alle 5 Sekunden wird das Essen an eine neue Position gesetzt
