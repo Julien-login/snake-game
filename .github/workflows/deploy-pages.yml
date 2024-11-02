@@ -10,13 +10,33 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Build and Deploy to GitHub Pages
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Build Project
+        run: |
+          npm install
+          npm run build # Passe dies an, wenn du einen anderen Build-Befehl verwendest
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: ./ # Passe dies an, falls deine Website-Dateien in einem Unterordner wie `build` oder `dist` liegen
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
