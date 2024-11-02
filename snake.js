@@ -31,7 +31,7 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         color: color,
-        isSpecial: Math.random() < 0.01 // 1% Chance, dass ein Stern-Snack erscheint
+        isSpecial: Math.random() < 0.15 // 1% Chance, dass ein Stern-Snack erscheint
     };
 }
 
@@ -69,13 +69,14 @@ function draw() {
     // Canvas leeren
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Schlange zeichnen mit individuellen Farben für jedes Segment
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = snake[i].color; // Segment behält seine individuelle Farbe
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
+// Farbe der Schlange
+for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = snake[i].color; // Segment behält seine individuelle Farbe
+    ctx.beginPath();
+    ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI); // Rundes Segment
+    ctx.fill();
+    ctx.strokeStyle = "black";
+    ctx.stroke();
 }
 
     // Essen anzeigen
@@ -152,6 +153,14 @@ function gameLoop() {
         draw();
     }
 }
+
+function relocateFood() {
+    food = createFood();
+    foodColor = food.color;
+    document.getElementById("poweredBy").style.color = foodColor; // Farbe des „Powered by“-Textes aktualisieren
+}
+setInterval(relocateFood, 5000); // Snack alle 5 Sekunden neu platzieren
+
 
 // Spiel starten und Anzeige regelmäßig aktualisieren
 const game = setInterval(gameLoop, 100);
