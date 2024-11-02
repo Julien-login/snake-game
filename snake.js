@@ -66,14 +66,17 @@ function checkCollision(head, array) {
 
 // Hauptspiel-Rendering
 function draw() {
+    // Canvas leeren
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Schlange zeichnen mit individuellen Farben für jedes Segment
     for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = snake[i].color;
+        ctx.fillStyle = snake[i].color; // Segment behält seine individuelle Farbe
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
         ctx.strokeStyle = "black";
         ctx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
+}
 
     // Essen anzeigen
     ctx.fillStyle = foodColor;
