@@ -120,6 +120,15 @@ function draw() {
         return;
     }
 
+// Snack-Position alle 5 Sekunden neu generieren
+setInterval(() => {
+    if (!isPaused) {
+        food = createFood();
+        foodColor = food.color;
+        document.getElementById("poweredBy").style.color = foodColor;
+    }
+}, 5000);
+
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
         score++;
