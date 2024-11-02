@@ -13,25 +13,22 @@
             font-family: Arial, sans-serif;
         }
 
+        #container {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        #scorePanel, #gameTitle, #poweredBy {
+            text-align: center;
+            font-size: 18px;
+        }
+
         #gameContainer {
             display: flex;
+            justify-content: center;
             align-items: center;
-        }
-
-        #scorePanel {
-            margin-right: 20px;
-            text-align: left;
-        }
-
-        #scorePanel div {
-            font-size: 18px;
-            margin: 5px 0;
-        }
-
-        #poweredBy {
-            position: absolute;
-            right: 10px;
-            font-size: 18px;
         }
 
         canvas {
@@ -41,21 +38,24 @@
     </style>
 </head>
 <body>
-    <h1>Snake Game</h1>
-
-    <div id="gameContainer">
-        <!-- Score Panel on the left side -->
+    <div id="container">
         <div id="scorePanel">
             <div id="gamesPlayed">Games Played: 0</div>
             <div id="score">Current Score: 0</div>
             <div id="highScore">All Time High Score: 0</div>
         </div>
 
-        <!-- Game Canvas in the center -->
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="gameTitle">
+            <h1>Snake Game</h1>
+        </div>
 
-        <!-- Powered by Text on the right side -->
-        <div id="poweredBy">Powered by Paul and Julien</div>
+        <div id="poweredBy">
+            Powered by Paul and Julien
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
     </div>
 
     <!-- Include snake.js script -->
