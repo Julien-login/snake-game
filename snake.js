@@ -35,12 +35,20 @@ function createFood() {
 
 // Event listener for keyboard controls
 document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-    else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-    else if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-    else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+    if (event.key === "ArrowUp" && direction !== "DOWN") setDirection("UP");
+    else if (event.key === "ArrowDown" && direction !== "UP") setDirection("DOWN");
+    else if (event.key === "ArrowLeft" && direction !== "RIGHT") setDirection("LEFT");
+    else if (event.key === "ArrowRight" && direction !== "LEFT") setDirection("RIGHT");
     else if (event.code === "Space") isPaused = !isPaused;
 });
+
+// Event listeners for on-screen buttons
+function setDirection(newDirection) {
+    if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
+    if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
+    if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
 
 // Main game loop
 function gameLoop() {
@@ -91,7 +99,11 @@ function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.forEach(segment => {
         ctx.fillStyle = segment.color;
-        ctx.fillRect(segment.x, segment.y, box, box);
+        ctx.beginPath();
+        ctx.arc(segment.x + box / 2, segment.y + box / 2, box / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.stroke();
     });
     ctx.fillStyle = food.color;
     ctx.fillRect(food.x, food.y, box, box);
