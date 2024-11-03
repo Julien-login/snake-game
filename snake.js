@@ -53,6 +53,14 @@ document.addEventListener("keydown", (event) => {
     else if (event.code === "Space") isPaused = !isPaused;
 });
 
+// Steuerung per Button
+function setDirection(dir) {
+    if (dir === "UP" && direction !== "DOWN") direction = "UP";
+    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
+
 // Kollisionsprüfung
 function checkCollision(head, array) {
     if (specialMode) return false; // Keine Kollision im Spezialmodus
