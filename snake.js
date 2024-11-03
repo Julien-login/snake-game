@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, color: "green" };
+snake[0] = { x: 9 * box, y: 10 * box, color: "green" }; // Standardfarbe des Kopfes
 
 let food = createFood();
 let foodColor = food.color;
@@ -36,7 +36,7 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         color: color,
-        isSpecial: Math.random() < 0.15 // 15% Wahrscheinlichkeit für einen Stern-Snack
+        isSpecial: Math.random() < 0.15 // 15% Wahrscheinlichkeit für einen speziellen Snack
     };
 }
 
@@ -49,7 +49,7 @@ function activateSpecialMode() {
     }, 20000); // 20 Sekunden Immunität
 }
 
-// Steuerungseingaben per Tasten und Buttons
+// Steuerungseingaben
 function setDirection(dir) {
     if (dir === "UP" && direction !== "DOWN") direction = "UP";
     else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
@@ -76,12 +76,41 @@ function checkCollision(head, array) {
     return false;
 }
 
+// Zeichnet den Kopf als Dreieck in die aktuelle Bewegungsrichtung
+function drawHead(snakeHead) {
+    ctx.fillStyle = snakeHead.color;
+    ctx.beginPath();
+    if (direction === "UP") {
+        ctx.moveTo(snakeHead.x + box / 2, snakeHead.y);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box);
+    } else if (direction === "DOWN") {
+        ctx.moveTo(snakeHead.x, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box / 2, snakeHead.y + box);
+    } else if (direction === "LEFT") {
+        ctx.moveTo(snakeHead.x + box, snakeHead.y);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box / 2);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box);
+    } else {
+        ctx.moveTo(snakeHead.x, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box / 2);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
+
 // Hauptspiel-Rendering
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Farbe der Schlange zeichnen
-    for (let i = 0; i < snake.length; i++) {
+    // Kopf als Dreieck zeichnen
+    drawHead(snake[0]);
+
+    // Körpersegmente als Kreise zeichnen
+    for (let i = 1; i < snake.length; i++) {
         ctx.fillStyle = snake[i].color;
         ctx.beginPath();
         ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
@@ -115,7 +144,7 @@ function draw() {
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY, color: foodColor };
+    const newHead = { x: snakeX, y: snakeY, color: snake[0].color }; // Der Kopf behält die gewählte Farbe
 
     // Kollision mit sich selbst
     if (checkCollision(newHead, snake)) {
@@ -138,17 +167,17 @@ function draw() {
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
         score++;
+        newHead.color = food.color; // Das neue Segment übernimmt die Snack-Farbe
+        snake.unshift(newHead);
         if (food.isSpecial) activateSpecialMode();
-        // Die Farbe des Snacks als Farbe des neuen Segmentes verwenden
-        newHead.color = food.color;
         food = createFood();
         foodColor = food.color;
         document.getElementById("poweredBy").style.color = foodColor;
     } else {
         snake.pop();
+        snake.unshift(newHead);
     }
 
-    snake.unshift(newHead);
     updateScoreDisplay();
 }
 
