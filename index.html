@@ -29,7 +29,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            flex-direction: column;
         }
 
         canvas {
@@ -37,22 +37,10 @@
             display: block;
         }
 
-        /* Grid für die Steuerungsbuttons */
-        #controller {
-            display: grid;
-            grid-template-areas:
-                ". up ."
-                "left . right"
-                ". down .";
-            grid-gap: 5px;
-            text-align: center;
-        }
-
-        /* Farbwahl-Panel für Schlangenkopf */
         #colorPanel {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .color-button {
@@ -60,7 +48,16 @@
             height: 30px;
             margin: 0 5px;
             cursor: pointer;
-            border: 1px solid #000;
+        }
+
+        #controller {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            grid-gap: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -71,6 +68,14 @@
         <div id="gamesPlayed">Games Played: 0</div>
         <div id="score">Current Score: 0</div>
         <div id="highScore">All Time High Score: 0</div>
+
+        <div id="colorPanel">
+            <div class="color-button" style="background-color: red;" onclick="setHeadColor('red')"></div>
+            <div class="color-button" style="background-color: blue;" onclick="setHeadColor('blue')"></div>
+            <div class="color-button" style="background-color: green;" onclick="setHeadColor('green')"></div>
+            <div class="color-button" style="background-color: yellow;" onclick="setHeadColor('yellow')"></div>
+            <div class="color-button" style="background-color: purple;" onclick="setHeadColor('purple')"></div>
+        </div>
     </div>
 
     <div id="gameTitle">
@@ -84,6 +89,7 @@
 
 <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
     <div id="controller">
         <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
         <button style="grid-area: left;" onclick="setDirection('LEFT')">◄</button>
@@ -92,16 +98,6 @@
     </div>
 </div>
 
-<!-- Farbpanel zur Auswahl des Kopfes -->
-<div id="colorPanel">
-    <div class="color-button" style="background-color: red;" onclick="setHeadColor('red')"></div>
-    <div class="color-button" style="background-color: blue;" onclick="setHeadColor('blue')"></div>
-    <div class="color-button" style="background-color: green;" onclick="setHeadColor('green')"></div>
-    <div class="color-button" style="background-color: yellow;" onclick="setHeadColor('yellow')"></div>
-    <div class="color-button" style="background-color: purple;" onclick="setHeadColor('purple')"></div>
-</div>
-
-<!-- Include snake.js script -->
 <script src="snake.js"></script>
 </body>
 </html>
