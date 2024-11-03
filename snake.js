@@ -139,6 +139,8 @@ function draw() {
     if (snakeX === food.x && snakeY === food.y) {
         score++;
         if (food.isSpecial) activateSpecialMode();
+        // Die Farbe des Snacks als Farbe des neuen Segmentes verwenden
+        newHead.color = food.color;
         food = createFood();
         foodColor = food.color;
         document.getElementById("poweredBy").style.color = foodColor;
