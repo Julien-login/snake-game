@@ -7,9 +7,8 @@ snake[0] = { x: 9 * box, y: 10 * box, color: "green" }; // Initial head color
 
 let food = createFood();
 let foodColor = food.color;
-let specialMode = false;
-let specialModeTimeout;
-let direction;
+let snackTrail = null; // Store pulled snack position
+let direction = "RIGHT";
 let isPaused = false;
 
 let score = 0;
@@ -36,38 +35,21 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         color: color,
-        isSpecial: Math.random() < 0.15 // 15% chance for a special food
     };
 }
 
-// Activate special mode
-function activateSpecialMode() {
-    specialMode = true;
-    clearTimeout(specialModeTimeout);
-    specialModeTimeout = setTimeout(() => {
-        specialMode = false;
-    }, 20000); // 20 seconds of immunity
+// Handle input from joystick buttons
+function setDirection(newDirection) {
+    if ((newDirection === "UP" && direction !== "DOWN") ||
+        (newDirection === "DOWN" && direction !== "UP") ||
+        (newDirection === "LEFT" && direction !== "RIGHT") ||
+        (newDirection === "RIGHT" && direction !== "LEFT")) {
+        direction = newDirection;
+    }
 }
-
-// Handle input
-function setDirection(dir) {
-    if (dir === "UP" && direction !== "DOWN") direction = "UP";
-    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
-    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
-}
-
-document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-    else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-    else if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-    else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-    else if (event.code === "Space") isPaused = !isPaused;
-});
 
 // Check for collision
 function checkCollision(head, array) {
-    if (specialMode) return false; // No collision in special mode
     for (let i = 1; i < array.length; i++) {
         if (head.x === array[i].x && head.y === array[i].y) {
             return true;
@@ -106,10 +88,8 @@ function drawHead(snakeHead) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw the snake's head as a triangle
-    drawHead(snake[0]);
+    drawHead(snake[0]); // Draw the snake's head
 
-    // Draw the snake's body segments
     for (let i = 1; i < snake.length; i++) {
         ctx.fillStyle = snake[i].color;
         ctx.beginPath();
@@ -138,9 +118,8 @@ function draw() {
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY, color: snake[0].color }; // New head with current head color
+    const newHead = { x: snakeX, y: snakeY, color: snake[0].color };
 
-    // Check for self-collision
     if (checkCollision(newHead, snake)) {
         alert("Game Over! The snake collided with itself.");
         gamesPlayed++;
@@ -151,7 +130,7 @@ function draw() {
         }
         score = 0;
         snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
-        direction = undefined;
+        direction = "RIGHT";
         food = createFood();
         foodColor = food.color;
         updateScoreDisplay();
@@ -160,27 +139,25 @@ function draw() {
 
     // Eat food
     if (snakeX === food.x && snakeY === food.y) {
-        score++;
-        const newSegment = { x: snakeX, y: snakeY, color: foodColor }; // New segment with food color
-        snake.unshift(newSegment); // Add the new segment at the start
+        snackTrail = { x: snakeX, y: snakeY, color: foodColor }; // Set snackTrail
         food = createFood();
         foodColor = food.color;
-    } else {
-        snake.pop(); // Remove the last segment if no food was eaten
-        snake.unshift(newHead); // Add the new head segment at the start
     }
+
+    // Update the snake trail if exists
+    if (snackTrail) {
+        snake.push(snackTrail);
+        snackTrail = null;
+    } else {
+        snake.pop(); // Remove the last segment if no snack is eaten
+    }
+
+    snake.unshift(newHead); // Add the new head
 
     updateScoreDisplay();
 }
 
-// Update food position every 5 seconds
-setInterval(() => {
-    if (!isPaused) {
-        food = createFood();
-        foodColor = food.color;
-    }
-}, 5000);
-
+// Game loop
 function gameLoop() {
     if (!isPaused) {
         draw();
@@ -189,3 +166,9 @@ function gameLoop() {
 
 setInterval(gameLoop, 100);
 setInterval(updateScoreDisplay, 1000);
+
+// Digital Joystick UI
+document.getElementById("upBtn").addEventListener("click", () => setDirection("UP"));
+document.getElementById("downBtn").addEventListener("click", () => setDirection("DOWN"));
+document.getElementById("leftBtn").addEventListener("click", () => setDirection("LEFT"));
+document.getElementById("rightBtn").addEventListener("click", () => setDirection("RIGHT"));
