@@ -17,8 +17,31 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+      # Step: Build the static files (if needed)
+      # If you need to build files using a tool like npm, yarn, or similar, add it here.
+      # Otherwise, this step can be skipped if the files are already in HTML, CSS, and JavaScript.
+      # Uncomment and modify the following lines if you have a build step.
+      # 
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '14' # or the version your project requires
+      #
+      # - name: Install Dependencies
+      #   run: npm install # or yarn install, depending on your package manager
+      #
+      # - name: Build Project
+      #   run: npm run build # or the build command your project uses
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: github-pages
-          path: ./ # Passe dies
+          path: ./ # Path to the folder to be deployed, update this if necessary
+
+  # Deploy to GitHub Pages
+  pages:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
