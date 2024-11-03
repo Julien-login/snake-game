@@ -35,6 +35,17 @@
             border: 1px solid black;
             display: block;
         }
+
+        /* Grid für die Steuerungsbuttons */
+        #controller {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            grid-gap: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -94,13 +105,12 @@
 
     <div id="gameContainer">
         <canvas id="gameCanvas" width="400" height="400"></canvas>
-<div id="controller">
-    <button onclick="setDirection('UP')">▲</button><br>
-    <button onclick="setDirection('LEFT')">◄</button>
-    <button onclick="setDirection('DOWN')">▼</button>
-    <button onclick="setDirection('RIGHT')">►</button>
-</div>
-
+        <div id="controller">
+            <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
+            <button style="grid-area: left;" onclick="setDirection('LEFT')">◄</button>
+            <button style="grid-area: down;" onclick="setDirection('DOWN')">▼</button>
+            <button style="grid-area: right;" onclick="setDirection('RIGHT')">►</button>
+        </div>
     </div>
 
     <!-- Include snake.js script -->
