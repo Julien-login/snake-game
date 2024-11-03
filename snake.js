@@ -14,6 +14,11 @@ let isPaused = false;
 
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
+// Funktion zum Setzen der Kopf-Farbe
+function setHeadColor(color) {
+    snake[0].color = color;
+}
+
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
 
 // Anzeige aktualisieren
@@ -45,6 +50,16 @@ function activateSpecialMode() {
 }
 
 // Steuerungseingaben
+
+// Steuerung per Button
+function setDirection(dir) {
+    if (dir === "UP" && direction !== "DOWN") direction = "UP";
+    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
+
+
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
     else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
@@ -70,6 +85,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 // Farbe der Schlange
+
 for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = snake[i].color; // Segment behält seine individuelle Farbe
     ctx.beginPath();
@@ -78,6 +94,8 @@ for (let i = 0; i < snake.length; i++) {
     ctx.strokeStyle = "black";
     ctx.stroke();
 }
+
+
 
     // Essen anzeigen
     ctx.fillStyle = foodColor;
@@ -124,6 +142,7 @@ for (let i = 0; i < snake.length; i++) {
     }
 
 // Snack-Position alle 5 Sekunden neu generieren
+
 setInterval(() => {
     if (!isPaused) {
         food = createFood();
@@ -131,6 +150,10 @@ setInterval(() => {
         document.getElementById("poweredBy").style.color = foodColor;
     }
 }, 5000);
+
+
+
+
 // Funktion, um das Essen zu erstellen
 function createFood() {
     const food = {
