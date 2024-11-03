@@ -2,19 +2,14 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const box = 20;
-let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, color: "green" };
-
+let snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
 let food = createFood();
-let foodColor = food.color;
-let specialMode = false;
-let specialModeTimeout;
-let direction;
+let direction = "RIGHT"; // Initial direction
 let isPaused = false;
-
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
+let joystickStartX, joystickStartY;
 
 // Function to set the head color
 function setHeadColor(color) {
@@ -39,19 +34,37 @@ function createFood() {
     };
 }
 
-// Detect joystick movement
+// Function to set direction
+function setDirection(newDirection) {
+    if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
+    else if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
+    else if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    else if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
+
+// Keyboard controls
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") setDirection("UP");
+    else if (event.key === "ArrowDown") setDirection("DOWN");
+    else if (event.key === "ArrowLeft") setDirection("LEFT");
+    else if (event.key === "ArrowRight") setDirection("RIGHT");
+    else if (event.code === "Space") isPaused = !isPaused;
+});
+
+// Joystick controls
 const joystickInner = document.getElementById("joystickInner");
-let joystickPosX, joystickPosY;
+const joystick = document.getElementById("joystick");
 
 joystickInner.addEventListener("touchstart", (e) => {
-    joystickPosX = e.touches[0].clientX;
-    joystickPosY = e.touches[0].clientY;
+    e.preventDefault();
+    joystickStartX = e.touches[0].clientX;
+    joystickStartY = e.touches[0].clientY;
 });
 
 joystickInner.addEventListener("touchmove", (e) => {
     e.preventDefault();
-    const diffX = e.touches[0].clientX - joystickPosX;
-    const diffY = e.touches[0].clientY - joystickPosY;
+    const diffX = e.touches[0].clientX - joystickStartX;
+    const diffY = e.touches[0].clientY - joystickStartY;
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
         if (diffX > 0) setDirection("RIGHT");
@@ -63,40 +76,15 @@ joystickInner.addEventListener("touchmove", (e) => {
 });
 
 joystickInner.addEventListener("touchend", () => {
-    joystickPosX = 0;
-    joystickPosY = 0;
+    joystickStartX = 0;
+    joystickStartY = 0;
 });
 
-// Set direction based on joystick
-function setDirection(dir) {
-    if (dir === "UP" && direction !== "DOWN") direction = "UP";
-    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
-    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
-}
-
-// Main game drawing function
+// Game logic and drawing
 function draw() {
+    if (isPaused) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the head
-    ctx.fillStyle = snake[0].color;
-    ctx.beginPath();
-    ctx.moveTo(snake[0].x + box / 2, snake[0].y);
-    ctx.lineTo(snake[0].x, snake[0].y + box);
-    ctx.lineTo(snake[0].x + box, snake[0].y + box);
-    ctx.closePath();
-    ctx.fill();
-
-    // Draw the rest of the snake
-    for (let i = 1; i < snake.length; i++) {
-        ctx.fillStyle = snake[i].color;
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-    }
-
-    // Draw food
-    ctx.fillStyle = food.color;
-    ctx.fillRect(food.x, food.y, box, box);
 
     // Move the snake
     let snakeX = snake[0].x;
@@ -107,22 +95,33 @@ function draw() {
     if (direction === "LEFT") snakeX -= box;
     if (direction === "RIGHT") snakeX += box;
 
-    // Check for boundary wrap
+    // Wrap around the canvas edges
     if (snakeX < 0) snakeX = canvas.width - box;
     else if (snakeX >= canvas.width) snakeX = 0;
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    // Add new head position to snake
+    // Add new head position
     const newHead = { x: snakeX, y: snakeY, color: snake[0].color };
     snake.unshift(newHead);
 
+    // Check if snake eats food
     if (snakeX === food.x && snakeY === food.y) {
         score++;
         food = createFood();
     } else {
         snake.pop();
     }
+
+    // Draw food
+    ctx.fillStyle = food.color;
+    ctx.fillRect(food.x, food.y, box, box);
+
+    // Draw snake
+    snake.forEach((segment, index) => {
+        ctx.fillStyle = index === 0 ? snake[0].color : segment.color;
+        ctx.fillRect(segment.x, segment.y, box, box);
+    });
 
     updateScoreDisplay();
 }
