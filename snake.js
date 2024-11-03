@@ -16,6 +16,11 @@ let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
 
+// Funktion zum Setzen der Kopf-Farbe
+function setHeadColor(color) {
+    snake[0].color = color;
+}
+
 // Anzeige aktualisieren
 function updateScoreDisplay() {
     document.getElementById("score").innerText = `Current Score: ${score}`;
@@ -44,7 +49,14 @@ function activateSpecialMode() {
     }, 20000); // 20 Sekunden Immunität
 }
 
-// Steuerungseingaben
+// Steuerungseingaben per Tasten und Buttons
+function setDirection(dir) {
+    if (dir === "UP" && direction !== "DOWN") direction = "UP";
+    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
+
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
     else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
@@ -52,14 +64,6 @@ document.addEventListener("keydown", (event) => {
     else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
     else if (event.code === "Space") isPaused = !isPaused;
 });
-
-// Steuerung per Button
-function setDirection(dir) {
-    if (dir === "UP" && direction !== "DOWN") direction = "UP";
-    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
-    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
-}
 
 // Kollisionsprüfung
 function checkCollision(head, array) {
@@ -76,7 +80,7 @@ function checkCollision(head, array) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Schlange zeichnen
+    // Farbe der Schlange zeichnen
     for (let i = 0; i < snake.length; i++) {
         ctx.fillStyle = snake[i].color;
         ctx.beginPath();
