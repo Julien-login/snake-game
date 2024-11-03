@@ -3,24 +3,18 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, color: "green" };
+snake[0] = { x: 9 * box, y: 10 * box, color: "green" }; // Startfarbe des Kopfes
 
 let food = createFood();
-let foodColor = food.color;
-let specialMode = false;
-let specialModeTimeout;
 let direction;
 let isPaused = false;
-
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
-let headColor = "green"; // Standard-Kopffarbe
 
-// Funktion zum Setzen der Kopf-Farbe
+// Funktion zum Setzen der Kopf-Farbe, bleibt fest
 function setHeadColor(color) {
-    headColor = color;
-    snake[0].color = headColor;
+    snake[0].color = color;
 }
 
 // Anzeige aktualisieren
@@ -37,8 +31,7 @@ function createFood() {
     return {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
-        color: color,
-        isSpecial: Math.random() < 0.15 // 15% Wahrscheinlichkeit für einen speziellen Snack
+        color: color
     };
 }
 
@@ -60,7 +53,6 @@ document.addEventListener("keydown", (event) => {
 
 // Kollisionsprüfung
 function checkCollision(head, array) {
-    if (specialMode) return false; // Keine Kollision im Spezialmodus
     for (let i = 1; i < array.length; i++) {
         if (head.x === array[i].x && head.y === array[i].y) {
             return true;
@@ -99,11 +91,9 @@ function drawHead(snakeHead) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Kopf als Dreieck zeichnen
-    drawHead(snake[0]);
+    drawHead(snake[0]); // Kopf zeichnen
 
-    // Körpersegmente als Kreise zeichnen
-    for (let i = 1; i < snake.length; i++) {
+    for (let i = 1; i < snake.length; i++) { // Körpersegmente zeichnen
         ctx.fillStyle = snake[i].color;
         ctx.beginPath();
         ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
@@ -113,7 +103,7 @@ function draw() {
     }
 
     // Snack anzeigen
-    ctx.fillStyle = foodColor;
+    ctx.fillStyle = food.color;
     ctx.fillRect(food.x, food.y, box, box);
 
     // Schlange bewegen
@@ -131,9 +121,9 @@ function draw() {
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    // Neuer Kopf mit der festgelegten Kopf-Farbe
-    const newHead = { x: snakeX, y: snakeY, color: headColor };
+    const newHead = { x: snakeX, y: snakeY, color: snake[0].color }; // Kopf bleibt unverändert
 
+    // Kollision mit sich selbst
     if (checkCollision(newHead, snake)) {
         alert("Game Over! Die Schlange hat sich selbst getroffen.");
         gamesPlayed++;
@@ -143,10 +133,9 @@ function draw() {
             localStorage.setItem("highScore", highScore);
         }
         score = 0;
-        snake = [{ x: 9 * box, y: 10 * box, color: headColor }];
+        snake = [{ x: 9 * box, y: 10 * box, color: snake[0].color }];
         direction = undefined;
         food = createFood();
-        foodColor = food.color;
         updateScoreDisplay();
         return;
     }
@@ -154,10 +143,9 @@ function draw() {
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
         score++;
-        // Die Farbe des neuen Segments entspricht der Farbe des Snacks
-        snake.push({ ...snake[snake.length - 1], color: foodColor });
+        newHead.color = snake[0].color; // Der Kopf behält seine Farbe
+        snake.push({ color: food.color }); // Farbe des Snacks wird zu Segment-Farbe
         food = createFood();
-        foodColor = food.color;
     } else {
         snake.pop();
     }
@@ -166,11 +154,10 @@ function draw() {
     updateScoreDisplay();
 }
 
-// Snack alle 5 Sekunden neu platzieren
+// Snack-Position alle 5 Sekunden neu platzieren
 setInterval(() => {
     if (!isPaused) {
         food = createFood();
-        foodColor = food.color;
     }
 }, 5000);
 
@@ -180,5 +167,6 @@ function gameLoop() {
     }
 }
 
+// Spiel starten
 setInterval(gameLoop, 100);
 setInterval(updateScoreDisplay, 1000);
