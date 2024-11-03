@@ -50,21 +50,26 @@
             cursor: pointer;
         }
 
-        #controller {
-            display: grid;
-            grid-template-areas:
-                ". up ."
-                "left . right"
-                ". down .";
-            grid-gap: 5px;
+        /* Joystick Style */
+        #joystick {
             margin-top: 10px;
-            text-align: center;
+            width: 80px;
+            height: 80px;
+            background: gray;
+            border-radius: 50%;
+            position: relative;
         }
 
-        #joystick button {
-            padding: 5px;
-            font-size: 18px;
-            cursor: pointer;
+        #joystickInner {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            touch-action: none;
         }
     </style>
 </head>
@@ -97,12 +102,9 @@
 <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     
-    <!-- Joystick Control Panel -->
-    <div id="controller">
-        <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
-        <button style="grid-area: left;" onclick="setDirection('LEFT')">◄</button>
-        <button style="grid-area: down;" onclick="setDirection('DOWN')">▼</button>
-        <button style="grid-area: right;" onclick="setDirection('RIGHT')">►</button>
+    <!-- Joystick -->
+    <div id="joystick">
+        <div id="joystickInner"></div>
     </div>
 </div>
 
