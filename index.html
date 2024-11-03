@@ -1,33 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snake Game</title>
-  <style>
-    /* CSS-Styles für das Spielfeld und den Joystick */
-    /* ... hier fügst du deine CSS-Styles ein ... */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        #scorePanel, #gameTitle, #poweredBy {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #gameContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        canvas {
+            border: 1px solid black;
+            display: block;
+        }
+
+        #colorPanel {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .color-button {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <div id="game-container">
-    <canvas id="gameCanvas"></canvas>
-    <div id="joystick">
-      <div id="joystickInner"></div>
+
+<div id="container">
+    <div id="scorePanel">
+        <div id="gamesPlayed">Games Played: 0</div>
+        <div id="score">Current Score: 0</div>
+        <div id="highScore">All Time High Score: 0</div>
+
+        <div id="colorPanel">
+            <div class="color-button" style="background-color: red;" onclick="setHeadColor('red')"></div>
+            <div class="color-button" style="background-color: blue;" onclick="setHeadColor('blue')"></div>
+            <div class="color-button" style="background-color: green;" onclick="setHeadColor('green')"></div>
+            <div class="color-button" style="background-color: yellow;" onclick="setHeadColor('yellow')"></div>
+            <div class="color-button" style="background-color: purple;" onclick="setHeadColor('purple')"></div>
+        </div>
     </div>
-  </div>
-  <div id="controls">
-    <button onclick="setHeadColor('red')">Rot</button>
-    <button onclick="setHeadColor('blue')">Blau</button>
-    <button onclick="setHeadColor('green')">Grün</button>
-    <button onclick="setHeadColor('yellow')">Gelb</button>
-    <button onclick="setHeadColor('purple')">Lila</button>
-  </div>
-  <div id="scoreboard">
-    <p>Spiele gespielt: <span id="gamesPlayed">0</span></p>
-    <p>Aktueller Punktestand: <span id="score">0</span></p>
-    <p>Höchster Punktestand: <span id="highScore">0</span></p>
-  </div>
-  <script src="snake.js"></script>
+
+    <div id="gameTitle">
+        <h1>Snake Game</h1>
+    </div>
+
+    <div id="poweredBy">
+        Powered by Paul and Julien
+    </div>
+</div>
+
+<div id="gameContainer">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+</div>
+
+<script src="snake.js"></script>
 </body>
 </html>
