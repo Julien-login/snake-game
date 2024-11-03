@@ -17,11 +17,12 @@ jobs:
       name: github-pages
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to latest version
 
       - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v4  # Updated to latest version
         with:
+          name: github-pages
           path: ./ # Adjust the path if necessary
 
   pages:
@@ -29,4 +30,4 @@ jobs:
     needs: deploy
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2  # Updated to latest version
