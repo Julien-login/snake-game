@@ -49,6 +49,22 @@
             margin: 0 5px;
             cursor: pointer;
         }
+
+        #controller {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left . right"
+                ". down .";
+            grid-gap: 5px;
+            margin-top: 10px;
+        }
+
+        #controller button {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -79,6 +95,13 @@
 
 <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <div id="controller">
+        <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
+        <button style="grid-area: left;" onclick="setDirection('LEFT')">◄</button>
+        <button style="grid-area: down;" onclick="setDirection('DOWN')">▼</button>
+        <button style="grid-area: right;" onclick="setDirection('RIGHT')">►</button>
+    </div>
 </div>
 
 <script src="snake.js"></script>
