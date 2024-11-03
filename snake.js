@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, colorID: "green" }; // Kopf mit Startfarbe "green"
+snake[0] = { x: 9 * box, y: 10 * box, colorID: "green" }; // Startfarbe für den Kopf
 
 // Lookup-Tabelle für Farben
 const colorLookup = {
@@ -15,7 +15,6 @@ const colorLookup = {
 };
 
 let food = createFood();
-let specialMode = false;
 let direction;
 let isPaused = false;
 
@@ -25,7 +24,7 @@ let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
 
 // Funktion zum Setzen der Kopf-Farbe
 function setHeadColor(color) {
-    snake[0].colorID = color; // Der Kopf behält die gewählte Farbe
+    snake[0].colorID = color;
 }
 
 // Anzeige aktualisieren
@@ -42,8 +41,7 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         colorID: colorID,
-        color: colorLookup[colorID],
-        isSpecial: Math.random() < 0.15
+        color: colorLookup[colorID]
     };
 }
 
@@ -65,7 +63,6 @@ document.addEventListener("keydown", (event) => {
 
 // Kollisionsprüfung
 function checkCollision(head, array) {
-    if (specialMode) return false; // Keine Kollision im Spezialmodus
     for (let i = 1; i < array.length; i++) {
         if (head.x === array[i].x && head.y === array[i].y) {
             return true;
@@ -106,7 +103,8 @@ function draw() {
 
     drawHead(snake[0]); // Kopf zeichnen
 
-    for (let i = 1; i < snake.length; i++) { // Körpersegmente zeichnen
+    // Körpersegmente zeichnen
+    for (let i = 1; i < snake.length; i++) {
         ctx.fillStyle = colorLookup[snake[i].colorID];
         ctx.beginPath();
         ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
@@ -145,7 +143,7 @@ function draw() {
             localStorage.setItem("highScore", highScore);
         }
         score = 0;
-        snake = [{ x: 9 * box, y: 10 * box, colorID: "green" }];
+        snake = [{ x: 9 * box, y: 10 * box, colorID: 1 }];
         direction = undefined;
         food = createFood();
         updateScoreDisplay();
@@ -155,8 +153,8 @@ function draw() {
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
         score++;
-        newHead.colorID = snake[0].colorID;
-        snake.push({ x: snake[0].x, y: snake[0].y, colorID: food.colorID });
+        const segmentColorID = food.colorID;
+        snake.push({ x: snake[0].x, y: snake[0].y, colorID: segmentColorID });
         food = createFood();
     } else {
         snake.pop();
