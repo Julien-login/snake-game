@@ -29,6 +29,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         canvas {
@@ -45,6 +46,21 @@
                 ". down .";
             grid-gap: 5px;
             text-align: center;
+        }
+
+        /* Farbwahl-Panel für Schlangenkopf */
+        #colorPanel {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .color-button {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 1px solid #000;
         }
     </style>
 </head>
@@ -85,35 +101,7 @@
     <div class="color-button" style="background-color: purple;" onclick="setHeadColor('purple')"></div>
 </div>
 
-
-
-    <div id="container">
-        <div id="scorePanel">
-            <div id="gamesPlayed">Games Played: 0</div>
-            <div id="score">Current Score: 0</div>
-            <div id="highScore">All Time High Score: 0</div>
-        </div>
-
-        <div id="gameTitle">
-            <h1>Snake Game</h1>
-        </div>
-
-        <div id="poweredBy">
-            Powered by Paul and Julien
-        </div>
-    </div>
-
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div id="controller">
-            <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
-            <button style="grid-area: left;" onclick="setDirection('LEFT')">◄</button>
-            <button style="grid-area: down;" onclick="setDirection('DOWN')">▼</button>
-            <button style="grid-area: right;" onclick="setDirection('RIGHT')">►</button>
-        </div>
-    </div>
-
-    <!-- Include snake.js script -->
-    <script src="snake.js"></script>
+<!-- Include snake.js script -->
+<script src="snake.js"></script>
 </body>
 </html>
