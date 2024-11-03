@@ -131,7 +131,8 @@ function draw() {
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY, color: headColor }; // Kopffarbe bleibt statisch
+    // Neuer Kopf mit der festgelegten Kopf-Farbe
+    const newHead = { x: snakeX, y: snakeY, color: headColor };
 
     if (checkCollision(newHead, snake)) {
         alert("Game Over! Die Schlange hat sich selbst getroffen.");
@@ -154,8 +155,7 @@ function draw() {
     if (snakeX === food.x && snakeY === food.y) {
         score++;
         // Die Farbe des neuen Segments entspricht der Farbe des Snacks
-        newHead.color = headColor;
-        snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y, color: foodColor });
+        snake.push({ ...snake[snake.length - 1], color: foodColor });
         food = createFood();
         foodColor = food.color;
     } else {
