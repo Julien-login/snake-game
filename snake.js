@@ -3,7 +3,8 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, color: "green" }; // Initial head color
+let headColor = "green"; // Initial head color
+snake[0] = { x: 9 * box, y: 10 * box, color: headColor }; // Initial head
 
 let food = createFood();
 let foodColor = food.color;
@@ -18,7 +19,8 @@ let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
 
 // Function to set the head color
 function setHeadColor(color) {
-    snake[0].color = color;
+    headColor = color;
+    snake[0].color = headColor; // Update the color of the head
 }
 
 // Update score display
@@ -36,17 +38,7 @@ function createFood() {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
         color: color,
-        isSpecial: Math.random() < 0.15 // 15% chance for a special food
     };
-}
-
-// Activate special mode
-function activateSpecialMode() {
-    specialMode = true;
-    clearTimeout(specialModeTimeout);
-    specialModeTimeout = setTimeout(() => {
-        specialMode = false;
-    }, 20000); // 20 seconds of immunity
 }
 
 // Handle input
@@ -64,17 +56,6 @@ document.addEventListener("keydown", (event) => {
     else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
     else if (event.code === "Space") isPaused = !isPaused;
 });
-
-// Check for collision
-function checkCollision(head, array) {
-    if (specialMode) return false; // No collision in special mode
-    for (let i = 1; i < array.length; i++) {
-        if (head.x === array[i].x && head.y === array[i].y) {
-            return true;
-        }
-    }
-    return false;
-}
 
 // Draw the snake's head as a triangle
 function drawHead(snakeHead) {
@@ -138,17 +119,20 @@ function draw() {
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY, color: headColor }; // Keep the head color
+    const newHead = { x: snakeX, y: snakeY, color: headColor }; // Maintain head color
 
     // Check for self-collision
     if (checkCollision(newHead, snake)) {
-        // Game over logic
+        alert("Game Over! The snake collided with itself.");
+        // Reset game state here if needed
+        return;
     }
 
     // Eat food
     if (snakeX === food.x && snakeY === food.y) {
-        // Add a new segment with the food's color
-        snake.unshift(newHead);
+        score++;
+        // Add a new segment with the color of the food
+        snake.push({ ...newHead, color: foodColor });
         food = createFood();
         foodColor = food.color;
     } else {
@@ -157,6 +141,16 @@ function draw() {
     }
 
     updateScoreDisplay();
+}
+
+// Check for collision
+function checkCollision(head, array) {
+    for (let i = 1; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Update food position every 5 seconds
