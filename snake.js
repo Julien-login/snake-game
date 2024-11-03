@@ -2,9 +2,7 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const box = 20;
-let snake = [];
-snake[0] = { x: 9 * box, y: 10 * box, color: "green" }; // Startfarbe des Kopfes
-
+let snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
 let food = createFood();
 let direction;
 let isPaused = false;
@@ -12,22 +10,23 @@ let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
 
-// Funktion zum Setzen der Kopf-Farbe, bleibt fest
+// Setzt die Kopf-Farbe dauerhaft
 function setHeadColor(color) {
     snake[0].color = color;
 }
 
-// Anzeige aktualisieren
+// Aktualisiert das Score-Display
 function updateScoreDisplay() {
-    document.getElementById("score").innerText = `Current Score: ${score}`;
-    document.getElementById("highScore").innerText = `All Time High Score: ${highScore}`;
-    document.getElementById("gamesPlayed").innerText = `Games Played: ${gamesPlayed}`;
+    document.getElementById("score").innerText = `Aktuelles Ergebnis: ${score}`;
+    document.getElementById("highScore").innerText = `Allzeit-Highscore: ${highScore}`;
+    document.getElementById("gamesPlayed").innerText = `Gespielte Spiele: ${gamesPlayed}`;
 }
 
-// Snack erstellen
+// Erstellt einen neuen Snack mit zufälliger Farbe und Position
 function createFood() {
     const colors = ["red", "blue", "yellow", "purple", "orange"];
     const color = colors[Math.floor(Math.random() * colors.length)];
+    document.getElementById("poweredBy").style.color = color; // Setzt die Farbe des Textes
     return {
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box,
@@ -51,7 +50,7 @@ document.addEventListener("keydown", (event) => {
     else if (event.code === "Space") isPaused = !isPaused;
 });
 
-// Kollisionsprüfung
+// Kollisionserkennung
 function checkCollision(head, array) {
     for (let i = 1; i < array.length; i++) {
         if (head.x === array[i].x && head.y === array[i].y) {
@@ -61,7 +60,7 @@ function checkCollision(head, array) {
     return false;
 }
 
-// Zeichnet den Kopf als Dreieck
+// Zeichnet den Kopf der Schlange als Dreieck
 function drawHead(snakeHead) {
     ctx.fillStyle = snakeHead.color;
     ctx.beginPath();
@@ -87,13 +86,15 @@ function drawHead(snakeHead) {
     ctx.stroke();
 }
 
-// Hauptspiel-Rendering
+// Hauptspiel-Zeichnen
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawHead(snake[0]); // Kopf zeichnen
+    // Kopf zeichnen
+    drawHead(snake[0]);
 
-    for (let i = 1; i < snake.length; i++) { // Körpersegmente zeichnen
+    // Segmente zeichnen
+    for (let i = 1; i < snake.length; i++) {
         ctx.fillStyle = snake[i].color;
         ctx.beginPath();
         ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
@@ -106,7 +107,7 @@ function draw() {
     ctx.fillStyle = food.color;
     ctx.fillRect(food.x, food.y, box, box);
 
-    // Schlange bewegen
+    // Bewegung
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
@@ -115,15 +116,15 @@ function draw() {
     if (direction === "LEFT") snakeX -= box;
     if (direction === "RIGHT") snakeX += box;
 
-    // Spielfeldgrenzen
+    // Randkollision
     if (snakeX < 0) snakeX = canvas.width - box;
     else if (snakeX >= canvas.width) snakeX = 0;
     if (snakeY < 0) snakeY = canvas.height - box;
     else if (snakeY >= canvas.height) snakeY = 0;
 
-    const newHead = { x: snakeX, y: snakeY, color: snake[0].color }; // Kopf bleibt unverändert
+    const newHead = { x: snakeX, y: snakeY, color: snake[0].color }; // Kopffarbe bleibt konstant
 
-    // Kollision mit sich selbst
+    // Kollisionserkennung
     if (checkCollision(newHead, snake)) {
         alert("Game Over! Die Schlange hat sich selbst getroffen.");
         gamesPlayed++;
@@ -143,8 +144,8 @@ function draw() {
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
         score++;
-        newHead.color = snake[0].color; // Der Kopf behält seine Farbe
-        snake.push({ color: food.color }); // Farbe des Snacks wird zu Segment-Farbe
+        newHead.color = snake[0].color; // Kopffarbe wird übernommen
+        snake.push({ ...newHead, color: food.color }); // Neues Segment bekommt Snackfarbe
         food = createFood();
     } else {
         snake.pop();
@@ -154,7 +155,7 @@ function draw() {
     updateScoreDisplay();
 }
 
-// Snack-Position alle 5 Sekunden neu platzieren
+// Snack-Positionierung
 setInterval(() => {
     if (!isPaused) {
         food = createFood();
