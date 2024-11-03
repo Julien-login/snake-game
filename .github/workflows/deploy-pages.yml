@@ -8,6 +8,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  pages: write
 
 jobs:
   deploy:
@@ -20,9 +21,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: ./ # Passe dies an, falls deine Website-Dateien in einem Unterordner wie `build` oder `dist` liegen
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./ # Passe dies
