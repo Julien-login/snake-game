@@ -19,12 +19,25 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3  # Updated to latest version
 
+      # Optional: Include a build step if needed (e.g., npm run build).
+      # Uncomment if you have a build command, otherwise skip this.
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: '20' # Latest version
+      
+      # - name: Install Dependencies
+      #   run: npm install
+      
+      # - name: Build Project
+      #   run: npm run build # Replace with your build command
+
       - name: Upload to GitHub Pages
         uses: actions/upload-artifact@v4  # Updated to latest version
         with:
           name: github-pages
-          path: ./ # Adjust the path if necessary
-
+          path: ./  # Adjust this if the path to the files is different
+          
   pages:
     runs-on: ubuntu-latest
     needs: deploy
