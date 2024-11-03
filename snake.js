@@ -66,14 +66,18 @@ function checkCollision(head, array) {
 
 // Hauptspiel-Rendering
 function draw() {
+    // Canvas leeren
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = snake[i].color;
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
+// Farbe der Schlange
+for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = snake[i].color; // Segment behält seine individuelle Farbe
+    ctx.beginPath();
+    ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI); // Rundes Segment
+    ctx.fill();
+    ctx.strokeStyle = "black";
+    ctx.stroke();
+}
 
     // Essen anzeigen
     ctx.fillStyle = foodColor;
@@ -114,11 +118,47 @@ function draw() {
         score = 0;
         snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
         direction = undefined;
-        food = createFood();
-        foodColor = food.color;
+        food = createFood();        foodColor = food.color;
         updateScoreDisplay();
         return;
     }
+
+// Snack-Position alle 5 Sekunden neu generieren
+setInterval(() => {
+    if (!isPaused) {
+        food = createFood();
+        foodColor = food.color;
+        document.getElementById("poweredBy").style.color = foodColor;
+    }
+}, 5000);
+// Funktion, um das Essen zu erstellen
+function createFood() {
+    const food = {
+        // Beispiel: zufällige Position und Farbe generieren
+        x: Math.floor(Math.random() * 20), // Position x
+        y: Math.floor(Math.random() * 20), // Position y
+        color: '#' + Math.floor(Math.random() * 16777215).toString(16) // Zufällige Farbe
+    };
+    return food;
+}
+
+// Funktion, um zu prüfen, ob das Essen gegessen wurde
+function checkIfFoodEaten() {
+    // Prüfe, ob die Spielfigur an der Position des Essens ist
+    if (player.x === food.x && player.y === food.y) {
+        // Essen neu erstellen und Farbe aktualisieren
+        food = createFood();
+        foodColor = food.color;
+        document.getElementById("poweredBy").style.color = foodColor;
+    }
+}
+
+// Beispiel: wiederholt die Prüfung auf Konsumierung
+setInterval(() => {
+    if (!isPaused) {
+        checkIfFoodEaten();
+    }
+}, 100); // Intervall für die Prüfung alle 100ms
 
     // Snack aufnehmen
     if (snakeX === food.x && snakeY === food.y) {
@@ -140,6 +180,14 @@ function gameLoop() {
         draw();
     }
 }
+
+function relocateFood() {
+    food = createFood();
+    foodColor = food.color;
+    document.getElementById("poweredBy").style.color = foodColor; // Farbe des „Powered by“-Textes aktualisieren
+}
+setInterval(relocateFood, 5000); // Snack alle 5 Sekunden neu platzieren
+
 
 // Spiel starten und Anzeige regelmäßig aktualisieren
 const game = setInterval(gameLoop, 100);
