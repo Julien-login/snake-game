@@ -5,54 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-family: Arial, sans-serif;
-        }
-
-        #container {
-            display: flex;
-            width: 100%;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-
-        #scorePanel, #gameTitle, #poweredBy {
-            text-align: center;
-            font-size: 18px;
-        }
-
-        #gameContainer {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        canvas {
-            border: 1px solid black;
-            display: block;
-        }
-
-        #colorPanel {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .color-button {
-            width: 30px;
-            height: 30px;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        /* Joystick Style */
+        /* Add your existing CSS styles */
         #joystick {
-            margin-top: 10px;
+            margin-top: 20px;
             width: 80px;
             height: 80px;
             background: gray;
@@ -69,45 +24,26 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            touch-action: none;
         }
     </style>
 </head>
 <body>
+    <div id="container">
+        <div id="scorePanel">
+            <div id="gamesPlayed">Games Played: 0</div>
+            <div id="score">Current Score: 0</div>
+            <div id="highScore">All Time High Score: 0</div>
+        </div>
 
-<div id="container">
-    <div id="scorePanel">
-        <div id="gamesPlayed">Games Played: 0</div>
-        <div id="score">Current Score: 0</div>
-        <div id="highScore">All Time High Score: 0</div>
+        <div id="gameTitle"><h1>Snake Game</h1></div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
 
-        <div id="colorPanel">
-            <div class="color-button" style="background-color: red;" onclick="setHeadColor('red')"></div>
-            <div class="color-button" style="background-color: blue;" onclick="setHeadColor('blue')"></div>
-            <div class="color-button" style="background-color: green;" onclick="setHeadColor('green')"></div>
-            <div class="color-button" style="background-color: yellow;" onclick="setHeadColor('yellow')"></div>
-            <div class="color-button" style="background-color: purple;" onclick="setHeadColor('purple')"></div>
+        <!-- Joystick container -->
+        <div id="joystick">
+            <div id="joystickInner"></div>
         </div>
     </div>
 
-    <div id="gameTitle">
-        <h1>Snake Game</h1>
-    </div>
-
-    <div id="poweredBy">
-        Powered by Paul and Julien
-    </div>
-</div>
-
-<div id="gameContainer">
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    
-    <!-- Joystick -->
-    <div id="joystick">
-        <div id="joystickInner"></div>
-    </div>
-</div>
-
-<script src="snake.js"></script>
+    <script src="snake.js"></script>
 </body>
 </html>
