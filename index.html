@@ -13,19 +13,83 @@
             font-family: Arial, sans-serif;
         }
 
-        #container, #gameContainer, #colorPanel {
+        #container {
+            display: flex;
+            width: 100%;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        #scorePanel, #gameTitle, #poweredBy {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #gameContainer {
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+        }
+
+        canvas {
+            border: 1px solid black;
+            display: block;
+        }
+
+        #colorPanel {
+            display: flex;
+            justify-content: center;
             margin-top: 10px;
         }
 
-        canvas { border: 1px solid black; }
-        
-        #joystick { width: 80px; height: 80px; background: lightgray; border-radius: 50%; position: relative; }
+        .color-button {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        /* Joystick and control styles */
+        #controller {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left joystick right"
+                ". down .";
+            grid-gap: 5px;
+            margin-top: 10px;
+        }
+
+        #joystick {
+            grid-area: joystick;
+            width: 50px;
+            height: 50px;
+            background: gray;
+            border-radius: 50%;
+            position: relative;
+            touch-action: none; /* Prevent page scrolling */
+        }
+
         #joystickInner {
-            width: 30px; height: 30px; background: gray; border-radius: 50%;
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: 25px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .control-button {
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+            user-select: none;
         }
     </style>
 </head>
@@ -57,11 +121,15 @@
 
 <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
-
-    <div id="joystick" onmousedown="startJoystickDrag(event)" onmouseup="endJoystickDrag()" 
-         onmousemove="moveJoystick(event)" ontouchstart="startJoystickDrag(event)" 
-         ontouchmove="moveJoystick(event)" ontouchend="endJoystickDrag()">
-        <div id="joystickInner"></div>
+    
+    <div id="controller">
+        <div class="control-button" style="grid-area: up;" onclick="setDirection('UP')">▲</div>
+        <div class="control-button" style="grid-area: left;" onclick="setDirection('LEFT')">◄</div>
+        <div id="joystick">
+            <div id="joystickInner"></div>
+        </div>
+        <div class="control-button" style="grid-area: right;" onclick="setDirection('RIGHT')">►</div>
+        <div class="control-button" style="grid-area: down;" onclick="setDirection('DOWN')">▼</div>
     </div>
 </div>
 
