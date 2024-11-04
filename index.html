@@ -66,6 +66,32 @@
             font-size: 18px;
         }
     </style>
+#joystick {
+    width: 80px;
+    height: 80px;
+    background-color: lightgray;
+    border-radius: 50%;
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#joystickInner {
+    width: 30px;
+    height: 30px;
+    background-color: gray;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    touch-action: none;
+}
+
+
+
 </head>
 <body>
 
@@ -95,6 +121,13 @@
 
 <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+<div id="joystick" onmousedown="startJoystickDrag(event)" onmouseup="endJoystickDrag()" 
+     onmousemove="moveJoystick(event)" ontouchstart="startJoystickDrag(event)" 
+     ontouchmove="moveJoystick(event)" ontouchend="endJoystickDrag()">
+    <div id="joystickInner"></div>
+</div>
+
     
     <div id="controller">
         <button style="grid-area: up;" onclick="setDirection('UP')">▲</button>
