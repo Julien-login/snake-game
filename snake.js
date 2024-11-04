@@ -3,61 +3,28 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 let snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
-let direction = "RIGHT";
-let food = createFood();
+let direction;
+let isPaused = false;
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gamesPlayed = localStorage.getItem("gamesPlayed") || 0;
-let isPaused = false;
-let joystickCenter = { x: 0, y: 0 };
-let isDragging = false;
 
-// Function to set the head color
+let food = createFood();
+let foodColor = food.color;
+
+// Funktion zum Setzen der Kopf-Farbe
 function setHeadColor(color) {
     snake[0].color = color;
 }
 
-function startJoystickDrag(event) {
-    isDragging = true;
-    const rect = document.getElementById("joystick").getBoundingClientRect();
-    joystickCenter = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-    };
-    moveJoystick(event); // Initial move
-}
-
-function moveJoystick(event) {
-    if (!isDragging) return;
-
-    const touch = event.touches ? event.touches[0] : event;
-    const xDiff = touch.clientX - joystickCenter.x;
-    const yDiff = touch.clientY - joystickCenter.y;
-
-    if (Math.abs(xDiff) > Math.abs(yDiff)) {
-        if (xDiff > 20 && direction !== "LEFT") setDirection("RIGHT");
-        else if (xDiff < -20 && direction !== "RIGHT") setDirection("LEFT");
-    } else {
-        if (yDiff > 20 && direction !== "UP") setDirection("DOWN");
-        else if (yDiff < -20 && direction !== "DOWN") setDirection("UP");
-    }
-
-    const joystickInner = document.getElementById("joystickInner");
-    joystickInner.style.transform = `translate(${Math.min(20, Math.max(-20, xDiff))}px, ${Math.min(20, Math.max(-20, yDiff))}px)`;
-}
-
-function endJoystickDrag() {
-    isDragging = false;
-    const joystickInner = document.getElementById("joystickInner");
-    joystickInner.style.transform = "translate(-50%, -50%)";
-}
-
+// Update der Score-Anzeige
 function updateScoreDisplay() {
     document.getElementById("score").innerText = `Current Score: ${score}`;
     document.getElementById("highScore").innerText = `All Time High Score: ${highScore}`;
     document.getElementById("gamesPlayed").innerText = `Games Played: ${gamesPlayed}`;
 }
 
+// Snack erstellen
 function createFood() {
     const colors = ["red", "blue", "yellow", "purple", "orange"];
     const color = colors[Math.floor(Math.random() * colors.length)];
@@ -68,37 +35,78 @@ function createFood() {
     };
 }
 
-document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp" && direction !== "DOWN") setDirection("UP");
-    else if (event.key === "ArrowDown" && direction !== "UP") setDirection("DOWN");
-    else if (event.key === "ArrowLeft" && direction !== "RIGHT") setDirection("LEFT");
-    else if (event.key === "ArrowRight" && direction !== "LEFT") setDirection("RIGHT");
-    else if (event.code === "Space") isPaused = !isPaused;
-});
-
-function setDirection(newDirection) {
-    if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
-    if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
-    if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
-    if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+// Kollisionsprüfung
+function checkCollision(head, array) {
+    for (let i = 1; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) return true;
+    }
+    return false;
 }
 
-function gameLoop() {
-    if (isPaused) return;
+// Zeichnen des Kopfes als Dreieck
+function drawHead(snakeHead) {
+    ctx.fillStyle = snakeHead.color;
+    ctx.beginPath();
+    if (direction === "UP") {
+        ctx.moveTo(snakeHead.x + box / 2, snakeHead.y);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box);
+    } else if (direction === "DOWN") {
+        ctx.moveTo(snakeHead.x, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box / 2, snakeHead.y + box);
+    } else if (direction === "LEFT") {
+        ctx.moveTo(snakeHead.x + box, snakeHead.y);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box / 2);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box);
+    } else {
+        ctx.moveTo(snakeHead.x, snakeHead.y);
+        ctx.lineTo(snakeHead.x + box, snakeHead.y + box / 2);
+        ctx.lineTo(snakeHead.x, snakeHead.y + box);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
 
-    let newHead = { ...snake[0] };
-    if (direction === "UP") newHead.y -= box;
-    if (direction === "DOWN") newHead.y += box;
-    if (direction === "LEFT") newHead.x -= box;
-    if (direction === "RIGHT") newHead.x += box;
+// Hauptspiel-Rendering
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    if (newHead.x < 0) newHead.x = canvas.width - box;
-    if (newHead.x >= canvas.width) newHead.x = 0;
-    if (newHead.y < 0) newHead.y = canvas.height - box;
-    if (newHead.y >= canvas.height) newHead.y = 0;
+    drawHead(snake[0]); // Kopf zeichnen
 
-    if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
-        alert("Game Over! The snake collided with itself.");
+    for (let i = 1; i < snake.length; i++) {
+        ctx.fillStyle = snake[i].color;
+        ctx.beginPath();
+        ctx.arc(snake[i].x + box / 2, snake[i].y + box / 2, box / 2, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+    }
+
+    // Snack anzeigen
+    ctx.fillStyle = foodColor;
+    ctx.fillRect(food.x, food.y, box, box);
+
+    // Schlange bewegen
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if (direction === "UP") snakeY -= box;
+    if (direction === "DOWN") snakeY += box;
+    if (direction === "LEFT") snakeX -= box;
+    if (direction === "RIGHT") snakeX += box;
+
+    // Spielfeldgrenzen
+    if (snakeX < 0) snakeX = canvas.width - box;
+    else if (snakeX >= canvas.width) snakeX = 0;
+    if (snakeY < 0) snakeY = canvas.height - box;
+    else if (snakeY >= canvas.height) snakeY = 0;
+
+    const newHead = { x: snakeX, y: snakeY, color: snake[0].color };
+
+    if (checkCollision(newHead, snake)) {
+        alert("Game Over! Die Schlange hat sich selbst getroffen.");
         gamesPlayed++;
         localStorage.setItem("gamesPlayed", gamesPlayed);
         if (score > highScore) {
@@ -106,36 +114,45 @@ function gameLoop() {
             localStorage.setItem("highScore", highScore);
         }
         score = 0;
-        snake = [{ x: 9 * box, y: 10 * box, color: "green" }];
-        direction = "RIGHT";
+        snake = [{ x: 9 * box, y: 10 * box, color: snake[0].color }];
+        direction = undefined;
         food = createFood();
+        foodColor = food.color;
         updateScoreDisplay();
         return;
     }
 
-    if (newHead.x === food.x && newHead.y === food.y) {
-        newHead.color = food.color;
+    if (snakeX === food.x && snakeY === food.y) {
         score++;
+        newHead.color = foodColor;
         food = createFood();
+        foodColor = food.color;
     } else {
         snake.pop();
     }
 
     snake.unshift(newHead);
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    snake.forEach(segment => {
-        ctx.fillStyle = segment.color;
-        ctx.beginPath();
-        ctx.arc(segment.x + box / 2, segment.y + box / 2, box / 2, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.strokeStyle = "black";
-        ctx.stroke();
-    });
-    ctx.fillStyle = food.color;
-    ctx.fillRect(food.x, food.y, box, box);
-
     updateScoreDisplay();
 }
 
-setInterval(gameLoop, 100);
+// Steuerung für Tastatur und Joystick
+function setDirection(dir) {
+    if (dir === "UP" && direction !== "DOWN") direction = "UP";
+    else if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+    else if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    else if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+}
+
+// Game Loop
+setInterval(draw, 100);
+document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") setDirection("UP");
+    if (e.key === "ArrowDown") setDirection("DOWN");
+    if (e.key === "ArrowLeft") setDirection("LEFT");
+    if (e.key === "ArrowRight") setDirection("RIGHT");
+});
+
+const joystick = document.getElementById("joystick");
+joystick.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+});
